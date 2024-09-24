@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integer Math Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input[type="text"] {
+            width: 50px;
+            font-size: 18px;
+            margin: 10px;
+            padding: 5px;
+            text-align: center;
+        }
+        button {
+            font-size: 18px;
+            padding: 5px 10px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #progressBar {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        #progressFill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+        #goldStar {
+            font-size: 48px;
+            color: gold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Integer Math Practice</h2>
+        <div id="problem"></div>
+        <input type="text" id="answer" pattern="-?[0-9]*" inputmode="numeric">
+        <button id="submit">Submit</button>
+        <button id="next" style="display: none;">Next Question</button>
+        <button id="startOver" style="display: none;">Start Over</button>
+        <div id="message"></div>
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+        <div id="goldStar">⭐</div>
+    </div>
+
+    <script>
+        let currentProblem = {};
+        let attempts = 0;
+        let correctStreak = 0;
+
+        function generateProblem() {
+            const num1 = Math.floor(Math.random() * 21) - 10;
+            const num2 = Math.floor(Math.random() * 21) - 10;
+            const operation = Math.random() < 0.5 ? '+' : '-';
+            const problem = `${num1} ${operation} ${num2}`;
+            const answer = operation === '+' ? num1 + num2 : num1 - num2;
+            return { problem, answer };
+        }
+
+        function displayProblem() {
+            currentProblem = generateProblem();
+            document.getElementById('problem').textContent = currentProblem.problem + ' =';
+            document.getElementById('answer').value = '';
+            document.getElementById('message').textContent = '';
+            document.getElementById('submit').style.display = 'inline-block';
+            document.getElementById('next').style.display = 'none';
+            document.getElementById('startOver').style.display = 'none';
+            attempts = 0;
+        }
+
+        function updateProgressBar() {
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${(correctStreak / 5) * 100}%`;
+        }
+
+        function resetActivity() {
+            correctStreak = 0;
+            updateProgressBar();
+            document.getElementById('goldStar').style.display = 'none';
+            document.getElementById('startOver').style.display = 'none';
+            displayProblem();
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const correctAnswer = currentProblem.answer;
+
+            if (userAnswer === correctAnswer) {
+                correctStreak++;
+                updateProgressBar();
+                if (correctStreak === 5) {
+                    document.getElementById('message').innerHTML = 'Congratulations! You\'ve completed the activity!<br>You\'ve earned a gold star!';
+                    document.getElementById('goldStar').style.display = 'inline';
+                    document.getElementById('submit').style.display = 'none';
+                    document.getElementById('startOver').style.display = 'inline-block';
+                } else {
+                    document.getElementById('message').textContent = 'Correct! Great job!';
+                    document.getElementById('submit').style.display = 'none';
+                    document.getElementById('next').style.display = 'inline-block';
+                }
+            } else {
+                attempts++;
+                correctStreak = 0;
+                updateProgressBar();
+                if (attempts === 1) {
+                    document.getElementById('message').textContent = 'Not quite. Here\'s a hint: Is your answer too high or too low? Try again!';
+                } else {
+                    document.getElementById('message').innerHTML = `Incorrect. The correct answer is ${correctAnswer}.<br>Explanation: ${currentProblem.problem} = ${correctAnswer}`;
+                    document.getElementById('submit').style.display = 'none';
+                    document.getElementById('next').style.display = 'inline-block';
+                }
+            }
+        }
+
+        document.getElementById('submit').addEventListener('click', checkAnswer);
+        document.getElementById('next').addEventListener('click', displayProblem);
+        document.getElementById('startOver').addEventListener('click', resetActivity);
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // Restrict input to numbers and minus sign
+        document.getElementById('answer').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9-]/g, '');
+        });
+
+        // Initial problem display
+        displayProblem();
+    </script>
+</body>
+</html>

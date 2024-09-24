@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Linear Equation Grapher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 1px solid #ddd;
+        }
+        .controls {
+            margin-left: 20px;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="graph" width="400" height="400"></canvas>
+        <div class="controls">
+            <h2>y = mx + b</h2>
+            <label for="slope">Slope (m): <span id="slopeValue">1</span></label><br>
+            <input type="range" id="slope" min="-10" max="10" step="0.1" value="1"><br><br>
+            <label for="intercept">Y-intercept (b): <span id="interceptValue">0</span></label><br>
+            <input type="range" id="intercept" min="-10" max="10" step="0.1" value="0">
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('graph');
+        const ctx = canvas.getContext('2d');
+        const slope = document.getElementById('slope');
+        const intercept = document.getElementById('intercept');
+        const slopeValue = document.getElementById('slopeValue');
+        const interceptValue = document.getElementById('interceptValue');
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw gridlines
+            ctx.beginPath();
+            ctx.strokeStyle = 'lightgray';
+            for (let i = -10; i <= 10; i++) {
+                let x = canvas.width / 2 + i * 20;
+                let y = canvas.height / 2 - i * 20;
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+
+            // Draw axes
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+
+            // Draw scale
+            ctx.font = '10px Arial';
+            for (let i = -10; i <= 10; i++) {
+                if (i !== 0) {
+                    let x = canvas.width / 2 + i * 20;
+                    let y = canvas.height / 2 - i * 20;
+                    ctx.fillText(i, x - 3, canvas.height / 2 + 12);
+                    ctx.fillText(i, canvas.width / 2 - 20, y + 3);
+                }
+            }
+
+            // Draw line
+            let m = parseFloat(slope.value);
+            let b = parseFloat(intercept.value);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2 - (m * (-10) + b) * 20);
+            ctx.lineTo(canvas.width, canvas.height / 2 - (m * 10 + b) * 20);
+            ctx.strokeStyle = 'darkblue';
+            ctx.lineWidth = 3; // Increased line width
+            ctx.stroke();
+            ctx.lineWidth = 1; // Reset line width for other elements
+        }
+
+        slope.oninput = function() {
+            slopeValue.textContent = this.value;
+            drawGraph();
+        }
+
+        intercept.oninput = function() {
+            interceptValue.textContent = this.value;
+            drawGraph();
+        }
+
+        drawGraph();
+    </script>
+</body>
+</html>

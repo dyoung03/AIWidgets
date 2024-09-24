@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Buddy: The Ethics of Exam Prep</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        .slide {
+            display: none;
+            width: 100%;
+        }
+        .slide.active {
+            display: flex;
+            justify-content: space-between;
+        }
+        .content {
+            width: 65%;
+        }
+        .image-container {
+            width: 30%;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        .buttons {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .buttons button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slide active" id="slide-1">
+            <div class="content">
+                <h2>Introduction</h2>
+                <p>As the school year progresses, the pressure of final exams looms over the students of Westfield High. Amidst the bustle of study groups and late-night cramming, a new tool has caught the attention of juniors and seniors alike: the AI Study Buddy. This innovative AI-driven platform analyzes past exams and predicts potential questions, helping students focus their study efforts.</p>
+                <p>Meet three friends navigating this new technology:</p>
+                <ul>
+                    <li><strong>Maya Patel:</strong> A diligent student aiming for a top university, Maya is excited about using the AI Study Buddy to maximize her study efficiency.</li>
+                    <li><strong>Ethan Chen:</strong> Balancing academics with a busy schedule of sports and extracurriculars, Ethan sees the AI as a potential game-changer for managing his time.</li>
+                    <li><strong>Ava Martinez:</strong> An all-rounder with a passion for learning, Ava is curious but skeptical about relying on AI predictions, preferring traditional study methods.</li>
+                </ul>
+                <p>As finals approach, the trio gathers in the school library, debating whether to fully embrace the AI Study Buddy or stick to their usual study routines. They turn to you for advice. What should they do next?</p>
+                <div class="buttons">
+                    <button onclick="showSlide('slide-2')">Option 1: Fully Embrace the AI</button>
+                    <button onclick="showSlide('slide-3')">Option 2: Balance AI and Traditional Study</button>
+                    <button onclick="showSlide('slide-4')">Option 3: Stick to Traditional Methods</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="intro.webp" alt="Students studying together">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>Fully Embrace the AI</h2>
+                <p>The trio decides to trust the AI Study Buddy entirely, focusing their study efforts on the predicted questions. As they progress, they find that the AI's predictions are surprisingly accurate, giving them confidence. However, on exam day, they encounter a few unexpected questions that weren't covered by the AI's predictions.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('slide-5')">Option 1: Use AI Feedback for Future Exams</button>
+                    <button onclick="showSlide('slide-6')">Option 2: Discuss with Teachers</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>Balance AI and Traditional Study</h2>
+                <p>The group decides to use the AI Study Buddy as a supplementary tool, guiding their focus while also ensuring they cover all the material. They feel well-prepared and confident as they sit for their exams. The combination of AI predictions and thorough review pays off, and they feel they have done well.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('slide-7')">Option 1: Share Success with Peers</button>
+                    <button onclick="showSlide('slide-8')">Option 2: Analyze AI's Accuracy</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>Stick to Traditional Methods</h2>
+                <p>Maya, Ethan, and Ava choose to ignore the AI Study Buddy, relying on their tried-and-true study techniques. They feel confident in their preparation but wonder if they missed out on an advantage. On exam day, they find the questions manageable, though they notice some classmates seemed more relaxed, likely due to using the AI.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('slide-9')">Option 1: Explore AI for Future Use</button>
+                    <button onclick="showSlide('slide-10')">Option 2: Focus on Study Groups</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>Use AI Feedback for Future Exams</h2>
+                <p>Reflecting on the AI's performance, the trio decides to use it more strategically for future exams, combining its insights with their own comprehensive study plans.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('feedback')">Get Feedback</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>Discuss with Teachers</h2>
+                <p>The trio approaches their teachers to discuss the unexpected questions and seek advice on balancing AI use with comprehensive studying, learning valuable strategies for the future.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('feedback')">Get Feedback</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>Share Success with Peers</h2>
+                <p>Encouraged by their success, the trio shares their balanced approach with peers, promoting a mix of AI and traditional study methods for optimal exam preparation.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('feedback')">Get Feedback</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>Analyze AI's Accuracy</h2>
+                <p>The trio evaluates the accuracy of the AI's predictions and considers improvements for future study sessions, enhancing their overall preparation strategy.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('feedback')">Get Feedback</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>Explore AI for Future Use</h2>
+                <p>Realizing the potential benefits, the trio decides to integrate the AI Study Buddy into their study routine for future exams, aiming for a balanced approach.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('feedback')">Get Feedback</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>Focus on Study Groups</h2>
+                <p>The trio forms study groups, combining the strengths of traditional methods with collaborative learning, enhancing their overall preparation.</p>
+                <div class="buttons">
+                    <button onclick="showSlide('feedback')">Get Feedback</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+
+        <div class="slide" id="feedback">
+            <div class="content">
+                <h2>Feedback on Decisions</h2>
+                <p><strong>Fully Embrace the AI:</strong></p>
+                <ul>
+                    <li><strong>Pros:</strong> Efficient use of time, focused study efforts, high accuracy in predictions.</li>
+                    <li><strong>Cons:</strong> Risk of missing unexpected topics, over-reliance on technology, reduced comprehensive understanding.</li>
+                </ul>
+                <p><strong>Balance AI and Traditional Study:</strong></p>
+                <ul>
+                    <li><strong>Pros:</strong> Comprehensive preparation, strategic use of technology, confidence in covering all material.</li>
+                    <li><strong>Cons:</strong> Requires more time and effort, potential for overloading with information.</li>
+                </ul>
+                <p><strong>Stick to Traditional Methods:</strong></p>
+                <ul>
+                    <li><strong>Pros:</strong> Thorough understanding of all material, reliance on proven study techniques.</li>
+                    <li><strong>Cons:</strong> Potential missed opportunities from AI insights, possibly less efficient use of study time.</li>
+                </ul>
+                <div class="buttons">
+                    <button onclick="showSlide('slide-1')">Restart Scenario</button>
+                </div>
+            </div>
+            <div class="image-container">
+                <img src="placeholder.png" alt="Placeholder Image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSlide(id) {
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
+        }
+    </script>
+</body>
+</html>

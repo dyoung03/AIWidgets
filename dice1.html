@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Dice Rolling Simulator</title>
+    <style>
+        .dice {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        .dot {
+            width: 20px;
+            height: 20px;
+            background-color: black;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .top-left { top: 10px; left: 10px; }
+        .top-right { top: 10px; right: 10px; }
+        .center-left { top: 40px; left: 10px; }
+        .center { top: 40px; left: 40px; }
+        .center-right { top: 40px; right: 10px; }
+        .bottom-left { bottom: 10px; left: 10px; }
+        .bottom-right { bottom: 10px; right: 10px; }
+    </style>
+</head>
+<body>
+    <div id="dice" class="dice">
+        <!-- Dots will be added here dynamically -->
+    </div>
+
+    <script>
+        const dice = document.getElementById('dice');
+        const dotPositions = {
+            1: ['center'],
+            2: ['top-left', 'bottom-right'],
+            3: ['top-left', 'center', 'bottom-right'],
+            4: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+            5: ['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'],
+            6: ['top-left', 'top-right', 'center-left', 'center-right', 'bottom-left', 'bottom-right']
+        };
+
+        function rollDice() {
+            let rolling = true;
+            let rollCount = 0;
+            const maxRolls = 20; // Increased number of rolls
+            const rollInterval = 150; // Slowed down interval between rolls (in milliseconds)
+
+            const rollAnimation = setInterval(() => {
+                if (rollCount < maxRolls) {
+                    const randomFace = Math.floor(Math.random() * 6) + 1;
+                    showDots(randomFace);
+                    rollCount++;
+                } else {
+                    clearInterval(rollAnimation);
+                    const finalRoll = Math.floor(Math.random() * 6) + 1;
+                    showDots(finalRoll);
+                    rolling = false;
+                }
+            }, rollInterval);
+        }
+
+        function showDots(number) {
+            dice.innerHTML = ''; // Clear existing dots
+            dotPositions[number].forEach(position => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${position}`;
+                dice.appendChild(dot);
+            });
+        }
+
+        dice.addEventListener('click', () => {
+            if (!dice.classList.contains('rolling')) {
+                dice.classList.add('rolling');
+                rollDice();
+                setTimeout(() => {
+                    dice.classList.remove('rolling');
+                }, 3100); // Increased duration to match the longer animation
+            }
+        });
+
+        // Initialize with a random face
+        showDots(Math.floor(Math.random() * 6) + 1);
+    </script>
+</body>
+</html>

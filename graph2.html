@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Graphing Practice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #container {
+            display: flex;
+            gap: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        #graphContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        #lineInfo, #questionPrompt {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        #questionPrompt {
+            width: 220px;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4a4a4a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #333333;
+        }
+        #feedback {
+            font-weight: bold;
+            margin: 15px 0;
+            min-height: 20px;
+        }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .toggle-label {
+            margin-left: 10px;
+        }
+        #celebrationCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="graphContainer">
+            <canvas id="graphCanvas" width="400" height="400"></canvas>
+            <div id="lineInfo">
+                <p>Slope: <span id="slopeValue" class="bold"></span></p>
+                <p>Y-intercept: <span id="interceptValue" class="bold"></span></p>
+            </div>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="showEquationToggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Show Equation</span>
+            </div>
+        </div>
+        <div id="questionPrompt">
+            <h3>Graph this line:</h3>
+            <p id="equation" class="bold"></p>
+            <div id="feedback"></div>
+            <button id="checkButton">Check Answer</button>
+            <button id="nextButton" style="display: none;">Next Line</button>
+        </div>
+    </div>
+    <canvas id="celebrationCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const scale = 20;
+        const offset = canvas.width / 2;
+        const graphSize = 10;
+
+        const slopeElement = document.getElementById('slopeValue');
+        const interceptElement = document.getElementById('interceptValue');
+        const equationElement = document.getElementById('equation');
+        const feedbackElement = document.getElementById('feedback');
+        const checkButton = document.getElementById('checkButton');
+        const nextButton = document.getElementById('nextButton');
+        const showEquationToggle = document.getElementById('showEquationToggle');
+
+        let points = [
+            { x: -5, y: 5 },
+            { x: 5, y: -5 }
+        ];
+
+        let draggingPoint = null;
+        let targetSlope, targetIntercept;
+        let showEquation = false;
+
+        function drawGrid() {
+            ctx.strokeStyle = 'lightgray';
+            ctx.lineWidth = 1;
+
+            for (let i = -graphSize; i <= graphSize; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * scale + offset, 0);
+                ctx.lineTo(i * scale + offset, canvas.height);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, i * scale + offset);
+                ctx.lineTo(canvas.width, i * scale + offset);
+                ctx.stroke();
+            }
+        }
+
+        function drawAxes() {
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(0, offset);
+            ctx.lineTo(canvas.width, offset);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(offset, 0);
+            ctx.lineTo(offset, canvas.height);
+            ctx.stroke();
+        }
+
+        function drawPoints() {
+            ctx.fillStyle = 'red';
+            points.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x * scale + offset, -point.y * scale + offset, 6, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function drawLine() {
+            try {
+                const [p1, p2] = points;
+                let m, b;
+
+                if (Math.abs(p2.x - p1.x) < 0.001) {
+                    // Vertical line
+                    ctx.strokeStyle = 'blue';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(p1.x * scale + offset, 0);
+                    ctx.lineTo(p1.x * scale + offset, canvas.height);
+                    ctx.stroke();
+
+                    slopeElement.textContent = "undefined";
+                    interceptElement.textContent = "N/A";
+
+                    if (showEquation) {
+                        ctx.fillStyle = 'black';
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillText(`x = ${p1.x.toFixed(2)}`, 10, 30);
+                    }
+                    return;
+                }
+
+                m = (p2.y - p1.y) / (p2.x - p1.x);
+                b = p1.y - m * p1.x;
+
+                slopeElement.textContent = m.toFixed(2);
+                interceptElement.textContent = b.toFixed(2);
+
+                let x1 = -graphSize, x2 = graphSize;
+                let y1 = m * x1 + b, y2 = m * x2 + b;
+
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(x1 * scale + offset, -y1 * scale + offset);
+                ctx.lineTo(x2 * scale + offset, -y2 * scale + offset);
+                ctx.stroke();
+
+                if (showEquation) {
+                    ctx.fillStyle = 'black';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText(`y = ${m.toFixed(2)}x + ${b.toFixed(2)}`, 10, 30);
+                }
+            } catch (error) {
+                console.error("Error in drawLine:", error);
+            }
+        }
+
+        function draw() {
+            try {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawGrid();
+                drawAxes();
+                drawLine();
+                drawPoints();
+            } catch (error) {
+                console.error("Error in draw:", error);
+            }
+        }
+
+        function generateQuestion() {
+            targetSlope = Math.floor(Math.random() * 5) - 2;
+            targetIntercept = Math.floor(Math.random() * 11) - 5;
+            equationElement.textContent = `y = ${targetSlope}x + ${targetIntercept}`;
+            feedbackElement.textContent = '';
+            checkButton.style.display = 'block';
+            nextButton.style.display = 'none';
+        }
+
+        // Celebration animation code
+        const celebrationCanvas = document.getElementById('celebrationCanvas');
+        const celebCtx = celebrationCanvas.getContext('2d');
+        celebrationCanvas.width = window.innerWidth;
+        celebrationCanvas.height = window.innerHeight;
+
+        const particles = [];
+        const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#8B00FF'];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * celebrationCanvas.width;
+                this.y = Math.random() * celebrationCanvas.height - celebrationCanvas.height;
+                this.size = Math.random() * 5 + 1;
+                this.speedY = Math.random() * 1 + 1;
+                this.color = rainbowColors[Math.floor(Math.random() * rainbowColors.length)];
+            }
+            update() {
+                this.y += this.speedY;
+                if (this.y > celebrationCanvas.height) {
+                    this.y = Math.random() * celebrationCanvas.height - celebrationCanvas.height;
+                }
+            }
+            draw() {
+                celebCtx.beginPath();
+                celebCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                celebCtx.fillStyle = this.color;
+                celebCtx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles.length = 0;  // Clear existing particles
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            celebCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+            for (let particle of particles) {
+                particle.update();
+                particle.draw();
+            }
+            if (particles.length > 0) {
+                requestAnimationFrame(animateParticles);
+            }
+        }
+
+        let celebrationTimeout;
+
+        function startCelebration() {
+            clearTimeout(celebrationTimeout);  // Clear any existing timeout
+            initParticles();
+            animateParticles();
+            celebrationTimeout = setTimeout(() => {
+                particles.length = 0;  // Clear particles
+                celebCtx.clearRect(0, 0, celebrationCanvas.width, celebrationCanvas.height);
+            }, 3000);  // Celebration lasts for 3 seconds
+        }
+
+        function checkAnswer() {
+            try {
+                const [p1, p2] = points;
+                const currentSlope = (p2.y - p1.y) / (p2.x - p1.x);
+                const currentIntercept = p1.y - currentSlope * p1.x;
+                
+                const slopeTolerance = 0.1;
+                const interceptTolerance = 0.1;
+
+                if (Math.abs(currentSlope - targetSlope) < slopeTolerance && 
+                    Math.abs(currentIntercept - targetIntercept) < interceptTolerance) {
+                    feedbackElement.textContent = 'Correct! Great job!';
+                    feedbackElement.style.color = 'green';
+                    checkButton.style.display = 'none';
+                    nextButton.style.display = 'block';
+                    startCelebration();  // Start the rainbow celebration
+                } else {
+                    feedbackElement.textContent = 'Not quite. Try again!';
+                    feedbackElement.style.color = 'red';
+                }
+            } catch (error) {
+                console.error("Error in checkAnswer:", error);
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - offset) / scale;
+            const y = -(e.clientY - rect.top - offset) / scale;
+
+            points.forEach((point, index) => {
+                if (Math.abs(point.x - x) < 0.5 && Math.abs(point.y - y) < 0.5) {
+                    draggingPoint = index;
+                }
+            });
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (draggingPoint !== null) {
+                const rect = canvas.getBoundingClientRect();
+                points[draggingPoint].x = Math.round((e.clientX - rect.left - offset) / scale);
+                points[draggingPoint].y = Math.round(-(e.clientY - rect.top - offset) / scale);
+                draw();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            draggingPoint = null;
+        });
+
+        checkButton.addEventListener('click', checkAnswer);
+        nextButton.addEventListener('click', generateQuestion);
+        showEquationToggle.addEventListener('change', (e) => {
+            showEquation = e.target.checked;
+            draw();
+        });
+
+        window.addEventListener('resize', () => {
+            celebrationCanvas.width = window.innerWidth;
+            celebrationCanvas.height = window.innerHeight;
+        });
+
+        generateQuestion();
+        draw();
+
+        console.log("Script loaded successfully");
+    </script>
+</body>
+</html>

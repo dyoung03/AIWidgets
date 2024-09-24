@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Simulator with Result Tracking</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { display: flex; flex-direction: column; align-items: center; }
+        .dice {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .dot {
+            width: 20px;
+            height: 20px;
+            background-color: black;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .top-left { top: 10px; left: 10px; }
+        .top-right { top: 10px; right: 10px; }
+        .center-left { top: 40px; left: 10px; }
+        .center { top: 40px; left: 40px; }
+        .center-right { top: 40px; right: 10px; }
+        .bottom-left { bottom: 10px; left: 10px; }
+        .bottom-right { bottom: 10px; right: 10px; }
+        #chartContainer { width: 400px; height: 200px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="dice" class="dice"></div>
+        <label>
+            <input type="checkbox" id="trackResults"> Track Results
+        </label>
+        <div id="chartContainer">
+            <canvas id="resultChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const dice = document.getElementById('dice');
+        const trackResultsCheckbox = document.getElementById('trackResults');
+        const chartContainer = document.getElementById('chartContainer');
+        const ctx = document.getElementById('resultChart').getContext('2d');
+        let chart;
+        let results = [0, 0, 0, 0, 0, 0];
+
+        const dotPositions = {
+            1: ['center'],
+            2: ['top-left', 'bottom-right'],
+            3: ['top-left', 'center', 'bottom-right'],
+            4: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
+            5: ['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'],
+            6: ['top-left', 'top-right', 'center-left', 'center-right', 'bottom-left', 'bottom-right']
+        };
+
+        function createChart() {
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1', '2', '3', '4', '5', '6'],
+                    datasets: [{
+                        label: 'Roll Results',
+                        data: results,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            chart.data.datasets[0].data = results;
+            chart.update();
+        }
+
+        function rollDice() {
+            let rolling = true;
+            let rollCount = 0;
+            const maxRolls = 20;
+            const rollInterval = 150;
+
+            const rollAnimation = setInterval(() => {
+                if (rollCount < maxRolls) {
+                    const randomFace = Math.floor(Math.random() * 6) + 1;
+                    showDots(randomFace);
+                    rollCount++;
+                } else {
+                    clearInterval(rollAnimation);
+                    const finalRoll = Math.floor(Math.random() * 6) + 1;
+                    showDots(finalRoll);
+                    rolling = false;
+                    if (trackResultsCheckbox.checked) {
+                        results[finalRoll - 1]++;
+                        updateChart();
+                    }
+                }
+            }, rollInterval);
+        }
+
+        function showDots(number) {
+            dice.innerHTML = '';
+            dotPositions[number].forEach(position => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${position}`;
+                dice.appendChild(dot);
+            });
+        }
+
+        dice.addEventListener('click', () => {
+            if (!dice.classList.contains('rolling')) {
+                dice.classList.add('rolling');
+                rollDice();
+                setTimeout(() => {
+                    dice.classList.remove('rolling');
+                }, 3100);
+            }
+        });
+
+        trackResultsCheckbox.addEventListener('change', () => {
+            if (trackResultsCheckbox.checked) {
+                chartContainer.style.display = 'block';
+                createChart();
+            } else {
+                chartContainer.style.display = 'none';
+                results = [0, 0, 0, 0, 0, 0];
+                if (chart) {
+                    chart.destroy();
+                }
+            }
+        });
+
+        // Initialize
+        showDots(Math.floor(Math.random() * 6) + 1);
+        chartContainer.style.display = 'none';
+    </script>
+</body>
+</html>
