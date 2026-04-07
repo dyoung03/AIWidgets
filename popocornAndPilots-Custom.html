@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Let's POP through Custom</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f9fafb; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    #root { width: 100%; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useCallback } = React;
+
+    const SLIDES = [
+      { type: "title" },
+      { type: "agenda" },
+      { type: "what_is_custom" },
+      { type: "compare" },
+      { type: "visit_site" },
+      {
+        type: "quiz",
+        question: "Michigan Virtual only has one content delivery option for students.",
+        answer: false,
+        explanation: "False! Michigan Virtual has THREE content delivery solutions: Complete, Collaborative, and Custom."
+      },
+      {
+        type: "quiz",
+        question: "MV's Custom model is different than the Complete and Collaborative models in that districts use their own LMS.",
+        answer: true,
+        explanation: "True! Custom is unique because districts use their own LMS paired with MV content and their own teachers."
+      },
+      {
+        type: "quiz",
+        question: "MV's Collaborative and Custom models are led by local teachers instead of Michigan Virtual teachers.",
+        answer: true,
+        explanation: "True! Both Collaborative and Custom use the district's own teachers, unlike the Complete model which uses MV teachers."
+      },
+      { type: "how_it_works" },
+      { type: "seamless" },
+      { type: "innovation" },
+      {
+        type: "quiz",
+        question: "MV's Custom model makes use of the Buzz LMS and its Publish Anywhere feature to deliver courses to different schools' LMS.",
+        answer: true,
+        explanation: "True! Courses are migrated to Buzz, then Publish Anywhere uses LTI and Common Cartridge standards to share them seamlessly."
+      },
+      {
+        type: "quiz",
+        question: "Content changes made in a MV Custom Buzz master course cascade down anywhere the course is used.",
+        answer: true,
+        explanation: "True! Real-time updates mean you change something once and it updates everywhere the course is used."
+      },
+      {
+        type: "quiz",
+        question: "Users click links to access the Buzz content from within their local LMS.",
+        answer: false,
+        explanation: "False! The content is fully integrated — it appears embedded inside the host LMS. It's not just links. Assessments, interactive elements, and grade data all flow seamlessly."
+      },
+      { type: "highlighting_work" },
+      { type: "highlighting_partners" },
+      {
+        type: "quiz",
+        question: "The R&D team has migrated 100+ courses into Buzz for schools to use in their own LMS.",
+        answer: true,
+        explanation: "True! Over 100 courses have been migrated from Brightspace to Buzz this past year."
+      },
+      {
+        type: "quiz",
+        question: "The R&D team has seen growth of the Custom program and is looking forward to scaling in 26-27.",
+        answer: true,
+        explanation: "True! After wrapping up free phase 1 pilots and transitioning to paid, the team expects scaled enrollment growth for 26-27."
+      },
+      {
+        type: "quiz",
+        question: "The R&D team is really cool and is focused on driving educational change and broadening student pathways.",
+        answer: true,
+        explanation: "Absolutely True! 😊 The R&D team is driving innovation in education and expanding opportunities for students."
+      },
+      { type: "thanks" }
+    ];
+
+    const Popcorn = ({ size = 24, style = {} }) => (
+      <span style={{ fontSize: size, ...style }}>🍿</span>
+    );
+
+    const PopcornBucket = ({ size = 40 }) => (
+      <span style={{ fontSize: size }}>🍿</span>
+    );
+
+    const SlideContainer = ({ children, bg = "white" }) => (
+      <div style={{
+        width: "100%", minHeight: 420, background: bg, borderRadius: 16,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        padding: "32px 28px", boxSizing: "border-box", position: "relative", overflow: "hidden"
+      }}>
+        {children}
+      </div>
+    );
+
+    const RedBar = () => (
+      <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 12, background: "#dc2626", borderRadius: "0 16px 16px 0" }} />
+    );
+
+    const YellowAccent = () => (
+      <div style={{ position: "absolute", left: 0, top: 0, width: 80, height: 8, background: "#eab308", borderRadius: "16px 0 0 0" }} />
+    );
+
+    const H1 = ({ children, color = "#dc2626" }) => (
+      <h1 style={{ color, fontSize: 28, fontWeight: 800, margin: "0 0 16px", textAlign: "center", lineHeight: 1.2 }}>{children}</h1>
+    );
+
+    const H2 = ({ children, color = "#dc2626" }) => (
+      <h2 style={{ color, fontSize: 22, fontWeight: 700, margin: "0 0 12px", textAlign: "center", lineHeight: 1.3 }}>{children}</h2>
+    );
+
+    const InfoCard = ({ icon, text }) => (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, background: "#fef9f0", borderRadius: 12, padding: "12px 16px", width: "100%" }}>
+        <PopcornBucket size={28} />
+        <span style={{ fontSize: 14, color: "#1f2937", lineHeight: 1.5 }}>{text}</span>
+      </div>
+    );
+
+    const ModelCard = ({ title, lines, note }) => (
+      <div style={{ background: "#fff7ed", borderRadius: 12, padding: 16, flex: 1, minWidth: 140, textAlign: "center" }}>
+        <PopcornBucket size={28} />
+        <div style={{ fontWeight: 700, fontSize: 15, marginTop: 6, color: "#1f2937" }}>{title}</div>
+        {lines.map((l, i) => (
+          <div key={i} style={{ fontSize: 13, color: l.bold ? "#dc2626" : "#4b5563", fontWeight: l.bold ? 600 : 400, marginTop: 2 }}>{l.text}</div>
+        ))}
+        {note && <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4, fontStyle: "italic" }}>{note}</div>}
+      </div>
+    );
+
+    const InnoCard = ({ title, desc }) => (
+      <div style={{ background: "#fef9f0", borderRadius: 12, padding: "12px 14px", flex: 1, minWidth: 140 }}>
+        <PopcornBucket size={22} />
+        <div style={{ fontWeight: 700, fontSize: 13, color: "#1f2937", marginTop: 4 }}>{title}</div>
+        <div style={{ fontSize: 12, color: "#4b5563", marginTop: 2, lineHeight: 1.4 }}>{desc}</div>
+      </div>
+    );
+
+    function QuizSlide({ question, answer, explanation }) {
+      const [selected, setSelected] = useState(null);
+      const isCorrect = selected === answer;
+
+      return (
+        <SlideContainer bg="linear-gradient(180deg, #fffbeb 0%, #ffffff 100%)">
+          <YellowAccent />
+          <RedBar />
+          <div style={{ textAlign: "center", marginBottom: 8 }}>
+            <span style={{ fontSize: 36 }}>🍿</span>
+            <span style={{ fontSize: 24, fontWeight: 800, color: "#dc2626", marginLeft: 8, verticalAlign: "middle" }}>POP Quiz!</span>
+          </div>
+          <div style={{ fontSize: 12, color: "#9ca3af", marginBottom: 12, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase" }}>True or False?</div>
+          <p style={{ fontSize: 16, color: "#1f2937", textAlign: "center", lineHeight: 1.5, margin: "0 0 24px", maxWidth: 500, fontWeight: 500 }}>
+            {question}
+          </p>
+          {selected === null ? (
+            <div style={{ display: "flex", gap: 16 }}>
+              <button onClick={() => setSelected(true)} style={{
+                padding: "12px 36px", fontSize: 16, fontWeight: 700, borderRadius: 12, border: "3px solid #16a34a",
+                background: "#f0fdf4", color: "#16a34a", cursor: "pointer", transition: "all 0.15s"
+              }}>TRUE</button>
+              <button onClick={() => setSelected(false)} style={{
+                padding: "12px 36px", fontSize: 16, fontWeight: 700, borderRadius: 12, border: "3px solid #dc2626",
+                background: "#fef2f2", color: "#dc2626", cursor: "pointer", transition: "all 0.15s"
+              }}>FALSE</button>
+            </div>
+          ) : (
+            <div style={{
+              background: isCorrect ? "#f0fdf4" : "#fef2f2",
+              border: `2px solid ${isCorrect ? "#16a34a" : "#dc2626"}`,
+              borderRadius: 12, padding: "16px 20px", maxWidth: 460, textAlign: "center"
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>{isCorrect ? "🎉" : "😬"}</div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: isCorrect ? "#16a34a" : "#dc2626", marginBottom: 8 }}>
+                {isCorrect ? "Correct!" : "Not quite!"}
+              </div>
+              <p style={{ fontSize: 14, color: "#374151", margin: 0, lineHeight: 1.5 }}>{explanation}</p>
+            </div>
+          )}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 12, height: 60, background: "linear-gradient(transparent, #fef3c7)", borderRadius: "0 0 0 16px", pointerEvents: "none" }} />
+        </SlideContainer>
+      );
+    }
+
+    function TitleSlide() {
+      return (
+        <SlideContainer bg="linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)">
+          <div style={{ background: "white", borderRadius: 16, padding: "32px 40px", textAlign: "center", maxWidth: 440 }}>
+            <div style={{ fontSize: 36, fontWeight: 900, color: "#dc2626", lineHeight: 1.1 }}>
+              Let's <span style={{ color: "#eab308", fontSize: 42, textShadow: "2px 2px 0 #b45309" }}>POP</span>
+            </div>
+            <div style={{ fontSize: 36, fontWeight: 900, color: "#dc2626", lineHeight: 1.1 }}>
+              through Custom
+            </div>
+          </div>
+          <div style={{ marginTop: 20, fontSize: 48, animation: "bounce 1s infinite" }}>🍿</div>
+        </SlideContainer>
+      );
+    }
+
+    function AgendaSlide() {
+      const items = ["What is Custom?", "How does it compare?", "How does it work?", "Highlight our work and partners"];
+      return (
+        <SlideContainer>
+          <YellowAccent /><RedBar />
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+            <span style={{ fontSize: 32 }}>🍿</span>
+            <H1>Agenda</H1>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%", maxWidth: 400 }}>
+            {items.map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg, #b91c1c, #7f1d1d)", flexShrink: 0 }} />
+                <span style={{ fontSize: 17, fontWeight: 600, color: "#1f2937" }}>{item}</span>
+              </div>
+            ))}
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function WhatIsCustomSlide() {
+      return (
+        <SlideContainer bg="linear-gradient(180deg, #fefce8 0%, #ffffff 40%)">
+          <H1>What is Custom?</H1>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 480 }}>
+            <InfoCard text="One of 3 Michigan Virtual content delivery solutions for students" />
+            <InfoCard text="Districts use their own teacher and their own LMS with MV courses" />
+            <InfoCard text="Schools can choose from over 100+ courses" />
+            <InfoCard text="Most flexible course delivery option" />
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function CompareSlide() {
+      return (
+        <SlideContainer>
+          <YellowAccent /><RedBar />
+          <H2>How does it compare to our other student-facing models?</H2>
+          <div style={{ display: "flex", gap: 12, width: "100%", maxWidth: 520, marginTop: 12, flexWrap: "wrap", justifyContent: "center" }}>
+            <ModelCard title="Complete" lines={[
+              { text: "Our Content" }, { text: "Our LMS" }, { text: "Our Teachers" }
+            ]} note="*Typical MV course led by MV teachers" />
+            <ModelCard title="Collaborative" lines={[
+              { text: "Our Content" }, { text: "Our LMS" }, { text: "Your Teachers", bold: true }
+            ]} />
+            <ModelCard title="Custom" lines={[
+              { text: "Our Content" }, { text: "Your LMS", bold: true }, { text: "Your Teachers", bold: true }
+            ]} />
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function VisitSiteSlide() {
+      return (
+        <SlideContainer bg="linear-gradient(135deg, #fef3c7, #fff)">
+          <RedBar />
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🍿🍿</div>
+          <H2>POP over to compare!</H2>
+          <a href="https://michiganvirtual.org/students/plans/" target="_blank" rel="noopener noreferrer" style={{
+            color: "#dc2626", fontWeight: 700, fontSize: 15, marginBottom: 16
+          }}>michiganvirtual.org/students/plans/</a>
+          <p style={{ fontSize: 14, color: "#6b7280", textAlign: "center", maxWidth: 340, lineHeight: 1.5 }}>
+            How are they alike? How are they different? Explore the comparison and come back to continue!
+          </p>
+        </SlideContainer>
+      );
+    }
+
+    function HowItWorksSlide() {
+      const steps = [
+        "MV courses are migrated from Brightspace into the Buzz LMS",
+        "Courses are reviewed to ensure migration was successful",
+        "Publish Anywhere in Buzz shares the course to another LMS using LTI and Common Cartridge standards",
+        "The course appears embedded inside the host LMS, but still runs from Buzz behind the scenes"
+      ];
+      return (
+        <SlideContainer>
+          <YellowAccent /><RedBar />
+          <H1>How Does It Work?</H1>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 500 }}>
+            {steps.map((s, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <div style={{
+                  width: 26, height: 26, borderRadius: "50%", background: "#dc2626", color: "white",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0
+                }}>{i + 1}</div>
+                <span style={{ fontSize: 14, color: "#1f2937", lineHeight: 1.5 }}>{s}</span>
+              </div>
+            ))}
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function SeamlessSlide() {
+      return (
+        <SlideContainer bg="linear-gradient(135deg, #dc2626, #991b1b)">
+          <YellowAccent />
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🍿</div>
+          <h2 style={{ color: "white", fontSize: 22, fontWeight: 800, textAlign: "center", margin: "0 0 12px", lineHeight: 1.3 }}>
+            In a kernel, we POP the course into another LMS!
+          </h2>
+          <p style={{ color: "#fecaca", fontSize: 15, textAlign: "center", maxWidth: 420, lineHeight: 1.5, margin: 0 }}>
+            Users (teachers/students) often don't even realize they're working in a different LMS. It feels seamless!
+          </p>
+        </SlideContainer>
+      );
+    }
+
+    function InnovationSlide() {
+      return (
+        <SlideContainer bg="linear-gradient(180deg, #fefce8 0%, #fff 40%)">
+          <H2>What is the innovation?</H2>
+          <p style={{ color: "#dc2626", fontSize: 14, fontWeight: 600, margin: "-4px 0 16px", textAlign: "center" }}>Custom helps MV scale content and partnerships</p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", width: "100%", maxWidth: 520 }}>
+            <InnoCard title="Build once, use anywhere" desc="No need to rebuild or duplicate courses for every system" />
+            <InnoCard title="Schools stay in their LMS" desc="No switching platforms — no separate enrollments or gradebooks" />
+            <InnoCard title="Real-time updates" desc="Change once, it updates everywhere the course is used" />
+            <InnoCard title="Full integration, not links" desc="Assessments and data integrated — performance data flows back to the host LMS" />
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function HighlightWorkSlide() {
+      return (
+        <SlideContainer>
+          <YellowAccent /><RedBar />
+          <H1>Highlighting Our Work</H1>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 500 }}>
+            <InfoCard text="Migrated over 100 courses from Brightspace to Buzz this past year" />
+            <InfoCard text="Wrapped up phase 1 (free) pilots and transitioned to a paid phase" />
+            <InfoCard text="Maintained 100+ course masters by updating reported issues in Buzz" />
+            <InfoCard text="Built a partner-facing website: michiganvirtual.org/students/plans/custom/" />
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function HighlightPartnersSlide() {
+      const partners = [
+        { name: "Gull Lake Virtual School", desc: "Grew from enrolling students in MV courses to a Collaborative partnership in 2017. Now uses a blend of Collaborative and Custom. 25-26 was their first Custom year — expecting scaled growth for 26-27." },
+        { name: "Ann Arbor Virtual", desc: "Piloted the use of courses within their local Schoology LMS." },
+        { name: "Laurel Springs Virtual School", desc: "Uses German world language courses to expand their catalog. Currently demoing several elective courses for further expansion." }
+      ];
+      return (
+        <SlideContainer>
+          <YellowAccent /><RedBar />
+          <H1>Highlighting Our Partners</H1>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 500 }}>
+            {partners.map((p, i) => (
+              <div key={i} style={{ background: "#fef9f0", borderRadius: 12, padding: "12px 16px" }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#1f2937", marginBottom: 4 }}><Popcorn size={16} /> {p.name}</div>
+                <div style={{ fontSize: 13, color: "#4b5563", lineHeight: 1.5 }}>{p.desc}</div>
+              </div>
+            ))}
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function ThanksSlide() {
+      return (
+        <SlideContainer bg="linear-gradient(180deg, #fefce8, #fff)">
+          <div style={{ fontSize: 48, marginBottom: 8 }}>🍿</div>
+          <H1 color="#dc2626">Thanks for popping in!</H1>
+          <p style={{ fontSize: 15, color: "#4b5563", marginBottom: 20, textAlign: "center" }}>Reach out to Holly or Christy with any questions</p>
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
+            {[{ name: "Holly Boleski", email: "hboleski@michiganvirtual.org" }, { name: "Christy Trombetta", email: "ctrombetta@michiganvirtual.org" }].map((p, i) => (
+              <div key={i} style={{ textAlign: "center" }}>
+                <div style={{
+                  width: 72, height: 72, borderRadius: "50%", border: "3px solid #dc2626",
+                  background: "#fef3c7", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 32, margin: "0 auto 8px"
+                }}>{i === 0 ? "👩‍💼" : "👩‍💻"}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#1f2937" }}>{p.name}</div>
+                <div style={{ fontSize: 12, color: "#dc2626" }}>{p.email}</div>
+              </div>
+            ))}
+          </div>
+        </SlideContainer>
+      );
+    }
+
+    function renderSlide(slide) {
+      switch (slide.type) {
+        case "title": return <TitleSlide />;
+        case "agenda": return <AgendaSlide />;
+        case "what_is_custom": return <WhatIsCustomSlide />;
+        case "compare": return <CompareSlide />;
+        case "visit_site": return <VisitSiteSlide />;
+        case "how_it_works": return <HowItWorksSlide />;
+        case "seamless": return <SeamlessSlide />;
+        case "innovation": return <InnovationSlide />;
+        case "highlighting_work": return <HighlightWorkSlide />;
+        case "highlighting_partners": return <HighlightPartnersSlide />;
+        case "thanks": return <ThanksSlide />;
+        case "quiz": return <QuizSlide question={slide.question} answer={slide.answer} explanation={slide.explanation} />;
+        default: return null;
+      }
+    }
+
+    function App() {
+      const [current, setCurrent] = useState(0);
+      const total = SLIDES.length;
+      const prev = useCallback(() => setCurrent(c => Math.max(0, c - 1)), []);
+      const next = useCallback(() => setCurrent(c => Math.min(total - 1, c + 1)), [total]);
+      const progress = ((current + 1) / total) * 100;
+
+      return (
+        <div style={{ maxWidth: 600, margin: "0 auto", fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}>
+          <div style={{ height: 6, background: "#fee2e2", borderRadius: 3, marginBottom: 12, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${progress}%`, background: "linear-gradient(90deg, #dc2626, #eab308)", borderRadius: 3, transition: "width 0.3s ease" }} />
+          </div>
+          <div style={{ textAlign: "center", fontSize: 12, color: "#9ca3af", marginBottom: 8, fontWeight: 600 }}>
+            {current + 1} / {total}
+          </div>
+          <div style={{ borderRadius: 16, boxShadow: "0 4px 24px rgba(0,0,0,0.1)", overflow: "hidden" }}>
+            <div key={current}>
+              {renderSlide(SLIDES[current])}
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, gap: 12 }}>
+            <button onClick={prev} disabled={current === 0} style={{
+              padding: "10px 24px", fontSize: 14, fontWeight: 700, borderRadius: 10,
+              border: "2px solid #dc2626", background: current === 0 ? "#f3f4f6" : "white",
+              color: current === 0 ? "#d1d5db" : "#dc2626", cursor: current === 0 ? "default" : "pointer",
+              transition: "all 0.15s"
+            }}>
+              ← Previous
+            </button>
+            <div style={{ display: "flex", gap: 4, flexWrap: "wrap", justifyContent: "center", maxWidth: 200 }}>
+              {SLIDES.map((s, i) => (
+                <div key={i} onClick={() => setCurrent(i)} style={{
+                  width: i === current ? 18 : 8, height: 8, borderRadius: 4,
+                  background: i === current ? "#dc2626" : s.type === "quiz" ? "#eab308" : "#fecaca",
+                  cursor: "pointer", transition: "all 0.2s"
+                }} />
+              ))}
+            </div>
+            <button onClick={next} disabled={current === total - 1} style={{
+              padding: "10px 24px", fontSize: 14, fontWeight: 700, borderRadius: 10,
+              border: "none", background: current === total - 1 ? "#f3f4f6" : "linear-gradient(135deg, #dc2626, #b91c1c)",
+              color: current === total - 1 ? "#d1d5db" : "white", cursor: current === total - 1 ? "default" : "pointer",
+              transition: "all 0.15s"
+            }}>
+              Next →
+            </button>
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 10, fontSize: 11, color: "#9ca3af" }}>
+            <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 4, background: "#fecaca", verticalAlign: "middle", marginRight: 4 }} />Content</span>
+            <span><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 4, background: "#eab308", verticalAlign: "middle", marginRight: 4 }} />Quiz</span>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
