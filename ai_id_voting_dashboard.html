@@ -1,98 +1,3 @@
-
-Claude finished the response
-AI In Instructional Design - Miro Board Values - Sheet2.pdf
-pdf
-
-10:31 AM
-Claude responded: Got it — this is the voting data from your Miro board exercise on AI in instructional design, broken out by the five phases (Decide, Define, Design, Develop, D…
-
-Analyzed structured data patterns and contemplated engagement approach
-Analyzed structured data patterns and contemplated engagement approach
-Got it — this is the voting data from your Miro board exercise on AI in instructional design, broken out by the five phases (Decide, Define, Design, Develop, Deploy) with favorability scores from -10 to +10.
-
-A few patterns jump out on a first read:
-
-The unanimous yeses cluster around analysis, generation against clear criteria, and quality checks — market analysis, performance gap analysis, spelling/grammar, project assignment recommendations, generating ideas targeting specific goals (all scored 10.00). The unanimous nos are about human judgment, identity, and relationship — AI Avatars presenting (-10.00), AI deciding which ID model to apply (-5.00), AI deciding SCECHs (-5.00), AI selecting who has capacity (-4.44). And the heavily "it depends" items are mostly creative output where quality varies wildly — create images, create interactives, AR courses, AI voiceover.
-
-Across the lifecycle, Develop has the most contested territory (lots of mixed votes on visuals, interactives, video) while Decide and Deploy show clearer team consensus.
-
-What would be most useful to do with this? A few directions I could take it:
-
-Visualize the patterns — a sortable dashboard or a phase-by-phase chart showing where the team is aligned vs. divided
-Synthesize into a working document — e.g., a "green light / yellow light / red light" framework for the team or for partner schools, or a prioritized roadmap of AI integration opportunities
-Dig into the contested items — pull out the "it depends" cluster and propose what conditions would move them toward yes
-Map to your AI integration levels (awareness / visible use / invisible use) — sort the green-lit items by where they'd fit
-Something else you had in mind
-Which of these would land best for what you're trying to do next?
-
-You said: The first one, visualize.
-The first one, visualize.
-
-10:32 AM
-Claude responded: Let me build an interactive dashboard for this.
-
-Architected interactive dashboard for voting data visualization
-Architected interactive dashboard for voting data visualization
-Let me build an interactive dashboard for this. You'll be able to filter by phase, sort different ways, and search.
-
-
-
-A few patterns this surfaces that are worth flagging:
-
-The phase averages tell a story: Deploy comes in highest at 3.7 — the team is most comfortable with AI in the back end of the pipeline, where it's reviewing and auditing rather than creating. Decide is right behind. Develop is the lowest at around 1.9, dragged down by the visuals/interactives/avatars cluster.
-
-If you sort by "Most contested," what surfaces is almost entirely Develop-phase media generation — create images, create interactives, create videos, AR courses. That's where the team isn't saying no, they're saying "we don't know yet." That's a different problem than the consensus rejections (AI avatars, SCECH decisions, choosing which ID model to apply) and probably calls for a different conversation — probably "what would we need to see to get to yes?"
-
-The unanimous yeses across phases all share a structure: AI evaluates against a known rubric or set of criteria (QM standards, alignment charts, performance gaps, market analysis, spelling/grammar). The unanimous nos all involve AI substituting for human judgment about people or identity (avatars as instructors, deciding capacity, deciding which ID model fits). That feels like a usable principle.
-
-Want me to take any of these threads further? I could pull the contested cluster out for a separate conversation framework, or map the green-lit items to your awareness/visible-use/invisible-use integration levels.
-
-You said: This looks really bad as a standalone html.
-This looks really bad as a standalone html. Make it so it's in a nice sized box in the middle of the page with appropriately styling inside a standalone html
-
-10:48 AM
-Claude responded: Let me build this as a properly designed standalone page.
-
-Architected editorial dashboard with distinctive typography and warm color palette
-Architected editorial dashboard with distinctive typography and warm color palette
-Let me build this as a properly designed standalone page. I'll go for an editorial aesthetic — centered container, considered typography, warm palette — rather than the chat-embedded look.
-
-
-Created a file, read a file
-Created a file, read a file
-This version sits in a centered paper-textured page with editorial typography — Fraunces for the display type, Manrope for body, JetBrains Mono for the data labels. The five-phase summary is a single horizontal strip with a top accent on the active filter rather than card chrome competing for attention, and item rows are quieter so the vote bars and scores can do the talking.
-
-Open it directly in a browser to view, or drop it on a shared drive for the team. Let me know if you want the palette swung darker, a different header voice, or a print-friendly version for a one-pager.
-
-
-Ai id voting dashboard
-Code · HTML 
-You said: Make the colors a little more bold so they are more easily recognizable between green, red and yellow.
-Make the colors a little more bold so they are more easily recognizable between green, red and yellow. Make the bars thicker and the dots larger.
-
-11:03 AM
-Claude responded: I'll bump up the color saturation so green/red/yellow are clearly distinct, and beef up the bars and dots.
-
-Scrutinizing dot placement across legend and vote counts
-Scrutinizing dot placement across legend and vote counts
-I'll bump up the color saturation so green/red/yellow are clearly distinct, and beef up the bars and dots.
-
-
-Edited 3 files, read a file
-Edited 3 files, read a file
-Updated. The yes is now a brighter grass green, the no is a clearer red (no more rust-brown), and the depends is a true golden yellow that won't get confused with the red. Vote bars went from 4px to 10px (with rounded ends), and the dots from 8px to 12px so they read clearly in both the legend and the row counts.
-
-
-Ai id voting dashboard
-Code · HTML 
-
-
-
-
-Claude is AI and can make mistakes. Please double-check responses.
-Ai id voting dashboard · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,7 +9,7 @@ Copy
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
   :root {
     --bg-page: #ECE5D6;
     --bg-paper: #FBF8F1;
@@ -115,7 +20,7 @@ Copy
     --border: #DDD3BE;
     --border-soft: #E8E0CE;
     --accent: #1E1A14;
- 
+
     --color-yes: #4A8B1F;
     --color-yes-bg: #DDE9C8;
     --color-yes-soft: #E8F0D6;
@@ -126,7 +31,7 @@ Copy
     --color-depends-bg: #F0DDB8;
     --color-neutral-bg: #E8E0CE;
     --color-neutral: #6B6258;
- 
+
     --phase-decide: #4A3B65;
     --phase-decide-bg: #E0D5EC;
     --phase-define: #2A5448;
@@ -137,12 +42,12 @@ Copy
     --phase-develop-bg: #ECD7B5;
     --phase-deploy: #6B2C44;
     --phase-deploy-bg: #E8CCD7;
- 
+
     --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   }
- 
+
   body {
     background: var(--bg-page);
     color: var(--text-primary);
@@ -157,7 +62,7 @@ Copy
       radial-gradient(ellipse at top, rgba(255,255,255,0.4) 0%, transparent 60%),
       radial-gradient(ellipse at bottom right, rgba(0,0,0,0.03) 0%, transparent 50%);
   }
- 
+
   .page {
     max-width: 920px;
     margin: 0 auto;
@@ -167,7 +72,7 @@ Copy
     position: relative;
     box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 24px 48px -24px rgba(0,0,0,0.08);
   }
- 
+
   .page::before {
     content: '';
     position: absolute;
@@ -177,10 +82,10 @@ Copy
     height: 5px;
     background: var(--accent);
   }
- 
+
   /* HEADER */
   .header { margin-bottom: 48px; }
- 
+
   .kicker {
     font-family: var(--font-body);
     font-size: 11px;
@@ -206,7 +111,7 @@ Copy
     letter-spacing: 0.05em;
     color: var(--text-tertiary);
   }
- 
+
   h1.title {
     font-family: var(--font-display);
     font-weight: 400;
@@ -221,7 +126,7 @@ Copy
     font-weight: 400;
     font-variation-settings: "opsz" 144, "SOFT" 100;
   }
- 
+
   .subtitle {
     font-size: 16px;
     line-height: 1.6;
@@ -229,7 +134,7 @@ Copy
     max-width: 620px;
     font-weight: 400;
   }
- 
+
   /* PHASE SUMMARY GRID */
   .phase-summary {
     display: grid;
@@ -262,7 +167,7 @@ Copy
     height: 3px;
     background: var(--accent);
   }
- 
+
   .phase-name {
     font-size: 10px;
     font-weight: 600;
@@ -290,7 +195,7 @@ Copy
     letter-spacing: 0.04em;
     margin-top: 6px;
   }
- 
+
   /* CONTROLS */
   .controls {
     display: flex;
@@ -327,7 +232,7 @@ Copy
   select { cursor: pointer; padding-right: 28px; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%236B6258' stroke-width='1.2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 10px center; }
   input[type="text"] { flex: 1; min-width: 180px; }
   input[type="text"]::placeholder { color: var(--text-tertiary); }
- 
+
   /* LEGEND + COUNT */
   .meta-row {
     display: flex;
@@ -356,7 +261,7 @@ Copy
   .dot-down { background: var(--color-no); }
   .dot-depends { background: var(--color-depends); }
   .item-count { font-family: var(--font-mono); font-size: 11px; color: var(--text-tertiary); }
- 
+
   /* ITEM LIST */
   .item-list { padding-top: 4px; }
   .item {
@@ -370,7 +275,7 @@ Copy
   }
   .item:hover { background: var(--bg-subtle); }
   .item:last-child { border-bottom: none; }
- 
+
   .phase-tag {
     font-size: 10px;
     font-weight: 600;
@@ -385,7 +290,7 @@ Copy
   .phase-tag.design { color: var(--phase-design); }
   .phase-tag.develop { color: var(--phase-develop); }
   .phase-tag.deploy { color: var(--phase-deploy); }
- 
+
   .item-body {}
   .item-text {
     font-size: 15px;
@@ -412,7 +317,7 @@ Copy
   .vote-up { background: var(--color-yes); }
   .vote-down { background: var(--color-no); }
   .vote-depends { background: var(--color-depends); }
- 
+
   .vote-counts {
     display: flex;
     gap: 12px;
@@ -422,7 +327,7 @@ Copy
     letter-spacing: 0.02em;
   }
   .vote-counts span { display: inline-flex; align-items: center; gap: 4px; }
- 
+
   .score-chip {
     font-family: var(--font-display);
     font-size: 18px;
@@ -438,7 +343,7 @@ Copy
   .score-neutral { color: var(--text-tertiary); }
   .score-mild-no { color: var(--color-no); opacity: 0.75; }
   .score-strong-no { color: var(--color-no); }
- 
+
   .empty {
     padding: 64px 0;
     text-align: center;
@@ -447,7 +352,7 @@ Copy
     font-family: var(--font-display);
     font-size: 18px;
   }
- 
+
   /* FOOTER */
   .footer {
     margin-top: 48px;
@@ -471,7 +376,7 @@ Copy
     display: block;
     margin-bottom: 6px;
   }
- 
+
   /* RESPONSIVE */
   @media (max-width: 720px) {
     body { padding: 24px 12px 60px; }
@@ -490,7 +395,7 @@ Copy
 </style>
 </head>
 <body>
- 
+
 <div class="page">
   <header class="header">
     <div class="kicker">
@@ -500,9 +405,9 @@ Copy
     <h1 class="title">AI in instructional design,<br><em>by team sentiment</em></h1>
     <p class="subtitle">A vote across the team on 104 ideas for AI integration, organized by the five phases of the instructional design lifecycle. Each idea was scored with thumbs up, thumbs down, or "it depends." Favorability is calculated from -10 (unanimous no) to +10 (unanimous yes).</p>
   </header>
- 
+
   <div class="phase-summary" id="phase-cards"></div>
- 
+
   <div class="controls">
     <div class="control-group">
       <span class="control-label">Sort</span>
@@ -518,7 +423,7 @@ Copy
       <input type="text" id="search-in" placeholder="Filter by keyword..." aria-label="Search ideas">
     </div>
   </div>
- 
+
   <div class="meta-row">
     <div class="legend">
       <span><span class="dot dot-up"></span>Yes</span>
@@ -527,15 +432,15 @@ Copy
     </div>
     <div class="item-count" id="item-count"></div>
   </div>
- 
+
   <div class="item-list" id="item-list"></div>
- 
+
   <footer class="footer">
     <strong>About this dashboard</strong>
     Source data from the Miro board exercise on AI integration in the instructional design process. Favorability scores weight thumbs-down votes against thumbs-up while accounting for "it depends" abstentions, scaled to a -10 to +10 range. Tap any phase tile to filter the list. Sort by "Most contested" to surface ideas with the highest "it depends" counts and tightest yes/no splits.
   </footer>
 </div>
- 
+
 <script>
 const items = [
   {p:'Decide',t:'Assign projects to iPD or R&D (make recommendations)',u:9,d:0,x:0,s:10.00},
@@ -643,10 +548,10 @@ const items = [
   {p:'Deploy',t:'Have it fix all broken links automatically',u:4,d:5,x:1,s:-1.00},
   {p:'Deploy',t:'Have it contact people who leave negative feedback and have a convo about what could have improved their experience',u:3,d:1,x:7,s:1.82}
 ];
- 
+
 let activePhase = 'all';
 const phases = ['Decide', 'Define', 'Design', 'Develop', 'Deploy'];
- 
+
 function getScoreClass(s) {
   if (s >= 7) return 'score-strong-yes';
   if (s >= 3) return 'score-mild-yes';
@@ -654,11 +559,11 @@ function getScoreClass(s) {
   if (s > -7) return 'score-mild-no';
   return 'score-strong-no';
 }
- 
+
 function escapeHtml(str) {
   return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
- 
+
 function renderPhaseCards() {
   const container = document.getElementById('phase-cards');
   container.innerHTML = '';
@@ -681,16 +586,16 @@ function renderPhaseCards() {
     container.appendChild(card);
   });
 }
- 
+
 function renderItems() {
   const sortVal = document.getElementById('sort-sel').value;
   const searchVal = document.getElementById('search-in').value.toLowerCase();
- 
+
   let filtered = items.filter(i =>
     (activePhase === 'all' || i.p === activePhase) &&
     (searchVal === '' || i.t.toLowerCase().includes(searchVal))
   );
- 
+
   if (sortVal === 'fav-desc') filtered.sort((a, b) => b.s - a.s);
   else if (sortVal === 'fav-asc') filtered.sort((a, b) => a.s - b.s);
   else if (sortVal === 'contested') filtered.sort((a, b) => {
@@ -706,15 +611,15 @@ function renderItems() {
       return b.s - a.s;
     });
   }
- 
+
   document.getElementById('item-count').textContent = filtered.length + ' / ' + items.length + ' ideas';
- 
+
   const list = document.getElementById('item-list');
   if (filtered.length === 0) {
     list.innerHTML = '<div class="empty">No ideas match your filters.</div>';
     return;
   }
- 
+
   list.innerHTML = filtered.map(item => {
     const total = item.u + item.d + item.x;
     const upPct = total > 0 ? (item.u / total) * 100 : 0;
@@ -722,7 +627,7 @@ function renderItems() {
     const depPct = total > 0 ? (item.x / total) * 100 : 0;
     const scoreText = (item.s >= 0 ? '+' : '') + item.s.toFixed(1);
     const phaseClass = item.p.toLowerCase();
- 
+
     return '<div class="item">' +
       '<div class="phase-tag ' + phaseClass + '">' + item.p + '</div>' +
       '<div class="item-body">' +
@@ -744,15 +649,13 @@ function renderItems() {
     '</div>';
   }).join('');
 }
- 
+
 document.getElementById('sort-sel').addEventListener('change', renderItems);
 document.getElementById('search-in').addEventListener('input', renderItems);
- 
+
 renderPhaseCards();
 renderItems();
 </script>
- 
+
 </body>
 </html>
- 
-
