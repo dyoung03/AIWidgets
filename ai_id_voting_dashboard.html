@@ -1,0 +1,292 @@
+<h2 class="sr-only">Interactive dashboard showing 104 AI integration ideas voted on across five instructional design phases (Decide, Define, Design, Develop, Deploy), filterable by phase and sortable by favorability or contestedness.</h2>
+
+<style>
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .dash { padding: 1rem 0; font-family: var(--font-sans); color: var(--color-text-primary); }
+  .summary-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+  .phase-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; cursor: pointer; transition: background 0.15s; border: 0.5px solid transparent; }
+  .phase-card:hover { border-color: var(--color-border-secondary); }
+  .phase-card.active { background: var(--color-background-info); border-color: var(--color-border-info); }
+  .phase-name { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; margin-bottom: 4px; letter-spacing: 0.02em; }
+  .phase-card.active .phase-name { color: var(--color-text-info); }
+  .phase-stat { font-size: 18px; font-weight: 500; line-height: 1.1; }
+  .phase-meta { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; }
+  .controls { display: flex; gap: 8px; margin-bottom: 0.75rem; align-items: center; flex-wrap: wrap; }
+  .controls label { font-size: 13px; color: var(--color-text-secondary); }
+  .controls select { font-size: 13px; }
+  .controls input[type="text"] { font-size: 13px; flex: 1; min-width: 140px; }
+  .legend { font-size: 11px; color: var(--color-text-tertiary); display: flex; gap: 14px; margin-bottom: 6px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .item-count { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .item-list { display: flex; flex-direction: column; }
+  .item { padding: 11px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .item-header { display: grid; grid-template-columns: 78px minmax(0,1fr) 56px; gap: 12px; align-items: start; margin-bottom: 7px; }
+  .phase-pill { font-size: 11px; padding: 3px 0; border-radius: var(--border-radius-md); text-align: center; font-weight: 500; letter-spacing: 0.02em; }
+  .item-text { font-size: 14px; line-height: 1.4; min-width: 0; word-wrap: break-word; }
+  .score-chip { font-size: 12px; font-weight: 500; padding: 4px 0; border-radius: var(--border-radius-md); text-align: center; }
+  .vote-row { display: flex; align-items: center; gap: 12px; padding-left: 90px; }
+  .vote-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--color-background-tertiary); overflow: hidden; display: flex; }
+  .vote-segment { height: 100%; }
+  .vote-up { background: #3B6D11; }
+  .vote-down { background: #A32D2D; }
+  .vote-depends { background: #BA7517; }
+  .vote-counts { font-size: 11px; color: var(--color-text-secondary); display: flex; gap: 9px; min-width: 88px; justify-content: flex-end; }
+  .vote-counts span { display: inline-flex; align-items: center; gap: 3px; }
+  .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+  .dot-up { background: #3B6D11; }
+  .dot-down { background: #A32D2D; }
+  .dot-depends { background: #BA7517; }
+  .pill-decide { background: #EEEDFE; color: #3C3489; }
+  .pill-define { background: #E1F5EE; color: #085041; }
+  .pill-design { background: #E6F1FB; color: #0C447C; }
+  .pill-develop { background: #FAEEDA; color: #633806; }
+  .pill-deploy { background: #FBEAF0; color: #72243E; }
+  @media (prefers-color-scheme: dark) {
+    .pill-decide { background: #26215C; color: #CECBF6; }
+    .pill-define { background: #04342C; color: #9FE1CB; }
+    .pill-design { background: #042C53; color: #B5D4F4; }
+    .pill-develop { background: #412402; color: #FAC775; }
+    .pill-deploy { background: #4B1528; color: #F4C0D1; }
+  }
+  .score-strong-yes { background: var(--color-background-success); color: var(--color-text-success); }
+  .score-mild-yes { background: var(--color-background-success); color: var(--color-text-success); opacity: 0.65; }
+  .score-neutral { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+  .score-mild-no { background: var(--color-background-warning); color: var(--color-text-warning); }
+  .score-strong-no { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .empty { padding: 2rem; text-align: center; color: var(--color-text-secondary); font-size: 13px; }
+</style>
+
+<div class="dash">
+  <div class="summary-grid" id="phase-cards"></div>
+  <div class="controls">
+    <label for="sort-sel">Sort:</label>
+    <select id="sort-sel">
+      <option value="fav-desc">Most favored</option>
+      <option value="fav-asc">Most opposed</option>
+      <option value="contested">Most contested</option>
+      <option value="phase">By phase</option>
+    </select>
+    <input type="text" id="search-in" placeholder="Search ideas...">
+  </div>
+  <div class="legend">
+    <span><span class="dot dot-up"></span>Yes</span>
+    <span><span class="dot dot-down"></span>No</span>
+    <span><span class="dot dot-depends"></span>It depends</span>
+    <span style="margin-left: auto; color: var(--color-text-tertiary);">Tap a phase to filter</span>
+  </div>
+  <div class="item-count" id="item-count"></div>
+  <div class="item-list" id="item-list"></div>
+</div>
+
+<script>
+const items = [
+{p:'Decide',t:'Assign projects to iPD or R&D (make recommendations)',u:9,d:0,x:0,s:10.00},
+{p:'Decide',t:'Should we take on the project?',u:8,d:2,x:0,s:6.00},
+{p:'Decide',t:'Evaluate project load',u:8,d:0,x:1,s:8.89},
+{p:'Decide',t:'Offer AI a set concept of content/program and ask for ways to improve the delivery',u:8,d:2,x:0,s:6.00},
+{p:'Decide',t:'Generate ideas that specifically target our goals (example: increased engagement)',u:8,d:0,x:0,s:10.00},
+{p:'Decide',t:'Write a project proposal',u:7,d:1,x:3,s:5.45},
+{p:'Decide',t:'Researching/forecasting popular or in-demand content',u:7,d:0,x:3,s:7.00},
+{p:'Decide',t:'Is the amount of hours we put into the project worth what we charge the client?',u:7,d:0,x:1,s:8.75},
+{p:'Decide',t:'Market analysis — is this course filling a void in the catalog and is there demand?',u:7,d:0,x:0,s:10.00},
+{p:'Decide',t:'Have AI decide what course we should add to our catalog — what are we lacking?',u:6,d:0,x:2,s:7.50},
+{p:'Decide',t:'Answer stakeholder questions',u:5,d:4,x:2,s:0.91},
+{p:'Decide',t:'Create users in necessary tools (e.g. for SMEs)',u:5,d:3,x:1,s:2.22},
+{p:'Decide',t:'Have AI decide if we should take on the project based on capacity, funding, and alignment with our mission',u:5,d:4,x:1,s:1.00},
+{p:'Decide',t:'Generate communications with SME',u:4,d:3,x:4,s:0.91},
+{p:'Decide',t:'Have it interview each ID to find the subjects they have knowledge about and/or would be good to align with current topics',u:4,d:3,x:2,s:1.11},
+{p:'Decide',t:'Auditing provided course materials',u:2,d:5,x:4,s:-2.73},
+{p:'Define',t:'Write complete scope and sequences',u:5,d:2,x:4,s:2.73},
+{p:'Define',t:'Draft a service agreement',u:4,d:0,x:5,s:4.44},
+{p:'Define',t:'Analyze performance gaps (by reviewing survey results)',u:9,d:0,x:0,s:10.00},
+{p:'Define',t:'Review textbooks and make recommendation',u:6,d:2,x:3,s:3.64},
+{p:'Define',t:'Brainstorm course structure, units/lessons and formative/summative assessments',u:7,d:2,x:2,s:4.55},
+{p:'Define',t:'Generate communications with SME',u:2,d:5,x:2,s:-3.33},
+{p:'Define',t:'Select who has capacity to be on a project',u:2,d:6,x:1,s:-4.44},
+{p:'Define',t:'Generate an entire course based on provided standards',u:9,d:1,x:1,s:7.27},
+{p:'Define',t:'Review a human-written set of course goals and deliverables to check for gaps against stakeholder needs',u:7,d:2,x:2,s:4.55},
+{p:'Define',t:'Provide scaffolding for accessibility considerations, especially for unique content',u:5,d:5,x:1,s:0.00},
+{p:'Define',t:'Decide what the project goals should be',u:3,d:3,x:4,s:0.00},
+{p:'Define',t:'Write the syllabus',u:8,d:3,x:1,s:4.17},
+{p:'Define',t:'Timelining',u:5,d:2,x:4,s:2.73},
+{p:'Define',t:'Generate project requirements document',u:2,d:4,x:6,s:-1.67},
+{p:'Define',t:'Decide how many SCECHs a course is worth',u:2,d:8,x:2,s:-5.00},
+{p:'Define',t:'Generate course description',u:10,d:2,x:0,s:6.67},
+{p:'Define',t:'Complete SCECH application',u:9,d:2,x:0,s:6.36},
+{p:'Define',t:'Select or generate a catalog image',u:1,d:8,x:1,s:-7.00},
+{p:'Define',t:'Generate SME contract',u:5,d:0,x:4,s:5.56},
+{p:'Design',t:'Provide feedback to SMEs',u:3,d:8,x:0,s:-4.55},
+{p:'Design',t:'Create assessments based on lesson scripts',u:6,d:2,x:3,s:3.64},
+{p:'Design',t:'Act as a SME',u:3,d:3,x:6,s:0.00},
+{p:'Design',t:'Write script',u:5,d:3,x:4,s:1.67},
+{p:'Design',t:'Generate page templates',u:5,d:0,x:2,s:7.14},
+{p:'Design',t:'Search the internet for open resources to be added to lessons',u:6,d:2,x:1,s:4.44},
+{p:'Design',t:'Generate visual prototypes / storyboards',u:6,d:0,x:4,s:6.00},
+{p:'Design',t:'Create lesson outlines',u:8,d:3,x:0,s:4.55},
+{p:'Design',t:'Draft objectives',u:8,d:3,x:0,s:4.55},
+{p:'Design',t:'Provide feedback on objectives',u:9,d:2,x:0,s:6.36},
+{p:'Design',t:'Generate a course outline from standards',u:8,d:2,x:1,s:5.45},
+{p:'Design',t:'Review a provided course outline for alignment with standards',u:8,d:2,x:1,s:5.45},
+{p:'Design',t:'Generate an assessment plan',u:5,d:2,x:4,s:2.73},
+{p:'Design',t:'When an ID and SME disagree on a design element, provide rationale for one side or the other',u:4,d:5,x:2,s:-0.91},
+{p:'Design',t:'Develop course map',u:7,d:3,x:1,s:3.64},
+{p:'Design',t:'Generate learning objectives',u:5,d:2,x:2,s:3.33},
+{p:'Design',t:'Review and provide feedback on SME scripts',u:4,d:3,x:2,s:1.11},
+{p:'Design',t:'Use it to make sure QM standards are being met',u:7,d:2,x:1,s:5.00},
+{p:'Design',t:'Selecting which instructional design model should be applied to a course',u:2,d:7,x:1,s:-5.00},
+{p:'Design',t:'Feed in unit lesson scripts; output unit intro and conclusions',u:9,d:2,x:0,s:6.36},
+{p:'Design',t:'Act as an ID',u:4,d:6,x:0,s:-2.00},
+{p:'Design',t:'Align content standards',u:7,d:2,x:1,s:5.00},
+{p:'Design',t:'Create assessments',u:4,d:2,x:4,s:2.00},
+{p:'Design',t:'Spelling/grammar suggestions bot (Grammarly)',u:9,d:0,x:0,s:10.00},
+{p:'Design',t:'Generate user personas',u:4,d:2,x:5,s:1.82},
+{p:'Design',t:'Generate feedback on practice activities',u:8,d:2,x:0,s:6.00},
+{p:'Develop',t:'Editing HTML',u:6,d:0,x:6,s:5.00},
+{p:'Develop',t:'Drafting scripts',u:4,d:2,x:6,s:1.67},
+{p:'Develop',t:'Providing feedback on scripts submitted by SMEs',u:1,d:3,x:5,s:-2.22},
+{p:'Develop',t:'Generating instructional media (videos etc.)',u:5,d:0,x:6,s:4.55},
+{p:'Develop',t:'Generating formative assessment activities',u:6,d:2,x:3,s:3.64},
+{p:'Develop',t:'Creating a lesson draft in BS/CourseArc etc. from a script',u:6,d:2,x:3,s:3.64},
+{p:'Develop',t:'Developing interactive elements from a script',u:3,d:7,x:0,s:-4.00},
+{p:'Develop',t:'Generating instructional graphics for a course',u:4,d:0,x:6,s:4.00},
+{p:'Develop',t:'Generating decorative graphics for a course',u:1,d:2,x:7,s:-1.00},
+{p:'Develop',t:'Generate assessment/assignment rubrics',u:6,d:2,x:2,s:4.00},
+{p:'Develop',t:'Chatbot to ask questions about MV dev standards (draws from + redirects to style guide)',u:8,d:2,x:0,s:6.00},
+{p:'Develop',t:'Write attributions/citations',u:8,d:2,x:0,s:6.00},
+{p:'Develop',t:'Create augmented reality courses',u:0,d:0,x:9,s:0.00},
+{p:'Develop',t:'AI avatars present course materials',u:0,d:10,x:0,s:-10.00},
+{p:'Develop',t:'AI generated voiceover',u:3,d:1,x:5,s:2.22},
+{p:'Develop',t:'Develop courses in CA',u:4,d:3,x:2,s:1.11},
+{p:'Develop',t:'Generate visuals',u:1,d:3,x:4,s:-2.50},
+{p:'Develop',t:'Generate question pools',u:8,d:2,x:0,s:6.00},
+{p:'Develop',t:'Cleanup feedback logs',u:2,d:5,x:3,s:-3.00},
+{p:'Develop',t:'Create videos',u:3,d:1,x:7,s:1.82},
+{p:'Develop',t:'Create images',u:1,d:1,x:10,s:0.00},
+{p:'Develop',t:'Create interactives',u:1,d:2,x:10,s:-0.77},
+{p:'Develop',t:'Write scenarios based on SME-provided course content',u:7,d:3,x:1,s:3.64},
+{p:'Develop',t:'Formatting transcripts',u:8,d:3,x:0,s:4.55},
+{p:'Develop',t:'Generating alt text',u:7,d:2,x:2,s:4.55},
+{p:'Develop',t:'Have it create Articulate Storyline interactives',u:2,d:6,x:2,s:-4.00},
+{p:'Develop',t:'Generating video transcripts',u:8,d:2,x:0,s:6.00},
+{p:'Develop',t:'LTI link CA',u:4,d:4,x:0,s:0.00},
+{p:'Develop',t:'Outline CA from CM',u:4,d:3,x:4,s:0.91},
+{p:'Deploy',t:'QM/OLC reviews',u:8,d:1,x:0,s:7.78},
+{p:'Deploy',t:'Predeployment reviews',u:7,d:3,x:0,s:4.00},
+{p:'Deploy',t:'Bot for reviewing feedback from surveys',u:7,d:1,x:2,s:6.00},
+{p:'Deploy',t:'Create alignment charts',u:8,d:1,x:0,s:7.78},
+{p:'Deploy',t:'Apply feedback',u:4,d:4,x:1,s:0.00},
+{p:'Deploy',t:'Fill out QM review worksheet',u:6,d:1,x:2,s:5.56},
+{p:'Deploy',t:'Approve developments based on style guide',u:6,d:4,x:0,s:2.00},
+{p:'Deploy',t:'What kind of courses can we create based on feedback from current courses',u:8,d:2,x:0,s:6.00},
+{p:'Deploy',t:'Have feedback on course fixes turn into Wrike tasks',u:5,d:1,x:4,s:4.00},
+{p:'Deploy',t:'Customer care/service bot to answer simple questions',u:5,d:4,x:0,s:1.11},
+{p:'Deploy',t:'WCAG/accessibility audit',u:5,d:1,x:4,s:4.00},
+{p:'Deploy',t:'Generate and distribute surveys for learner feedback',u:4,d:2,x:3,s:2.22},
+{p:'Deploy',t:'Have it fix all broken links automatically',u:4,d:5,x:1,s:-1.00},
+{p:'Deploy',t:'Have it contact people who leave negative feedback and have a convo about what could have improved their experience',u:3,d:1,x:7,s:1.82}
+];
+
+let activePhase = 'all';
+const phases = ['Decide', 'Define', 'Design', 'Develop', 'Deploy'];
+
+function getScoreClass(s) {
+  if (s >= 7) return 'score-strong-yes';
+  if (s >= 3) return 'score-mild-yes';
+  if (s > -3) return 'score-neutral';
+  if (s > -7) return 'score-mild-no';
+  return 'score-strong-no';
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderPhaseCards() {
+  const container = document.getElementById('phase-cards');
+  container.innerHTML = '';
+  phases.forEach(phase => {
+    const phaseItems = items.filter(i => i.p === phase);
+    const avg = phaseItems.reduce((sum, i) => sum + i.s, 0) / phaseItems.length;
+    const card = document.createElement('div');
+    card.className = 'phase-card' + (activePhase === phase ? ' active' : '');
+    card.innerHTML = '<div class="phase-name">' + phase + '</div>' +
+      '<div class="phase-stat">' + avg.toFixed(1) + '</div>' +
+      '<div class="phase-meta">' + phaseItems.length + ' ideas</div>';
+    card.addEventListener('click', () => {
+      activePhase = activePhase === phase ? 'all' : phase;
+      renderPhaseCards();
+      renderItems();
+    });
+    container.appendChild(card);
+  });
+}
+
+function renderItems() {
+  const sortVal = document.getElementById('sort-sel').value;
+  const searchVal = document.getElementById('search-in').value.toLowerCase();
+  
+  let filtered = items.filter(i => 
+    (activePhase === 'all' || i.p === activePhase) &&
+    (searchVal === '' || i.t.toLowerCase().includes(searchVal))
+  );
+  
+  if (sortVal === 'fav-desc') filtered.sort((a, b) => b.s - a.s);
+  else if (sortVal === 'fav-asc') filtered.sort((a, b) => a.s - b.s);
+  else if (sortVal === 'contested') filtered.sort((a, b) => {
+    const ca = a.x + (Math.min(a.u, a.d) * 2);
+    const cb = b.x + (Math.min(b.u, b.d) * 2);
+    return cb - ca;
+  });
+  else if (sortVal === 'phase') {
+    filtered.sort((a, b) => {
+      const pa = phases.indexOf(a.p);
+      const pb = phases.indexOf(b.p);
+      if (pa !== pb) return pa - pb;
+      return b.s - a.s;
+    });
+  }
+  
+  document.getElementById('item-count').textContent = filtered.length + ' of ' + items.length + ' ideas';
+  
+  const list = document.getElementById('item-list');
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">No ideas match your filters.</div>';
+    return;
+  }
+  
+  list.innerHTML = filtered.map(item => {
+    const total = item.u + item.d + item.x;
+    const upPct = total > 0 ? (item.u / total) * 100 : 0;
+    const downPct = total > 0 ? (item.d / total) * 100 : 0;
+    const depPct = total > 0 ? (item.x / total) * 100 : 0;
+    const scoreText = (item.s >= 0 ? '+' : '') + item.s.toFixed(1);
+    const pillClass = 'pill-' + item.p.toLowerCase();
+    
+    return '<div class="item">' +
+      '<div class="item-header">' +
+        '<div class="phase-pill ' + pillClass + '">' + item.p + '</div>' +
+        '<div class="item-text">' + escapeHtml(item.t) + '</div>' +
+        '<div class="score-chip ' + getScoreClass(item.s) + '">' + scoreText + '</div>' +
+      '</div>' +
+      '<div class="vote-row">' +
+        '<div class="vote-bar">' +
+          '<div class="vote-segment vote-up" style="width: ' + upPct + '%"></div>' +
+          '<div class="vote-segment vote-down" style="width: ' + downPct + '%"></div>' +
+          '<div class="vote-segment vote-depends" style="width: ' + depPct + '%"></div>' +
+        '</div>' +
+        '<div class="vote-counts">' +
+          '<span><span class="dot dot-up"></span>' + item.u + '</span>' +
+          '<span><span class="dot dot-down"></span>' + item.d + '</span>' +
+          '<span><span class="dot dot-depends"></span>' + item.x + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+document.getElementById('sort-sel').addEventListener('change', renderItems);
+document.getElementById('search-in').addEventListener('input', renderItems);
+
+renderPhaseCards();
+renderItems();
+</script>
